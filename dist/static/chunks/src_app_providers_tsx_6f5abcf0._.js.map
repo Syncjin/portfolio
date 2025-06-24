@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/sungjunjo/sync/portfolio/src/app/providers.tsx"],"sourcesContent":["\"use client\";\n\nimport { QueryClient, QueryClientProvider } from \"@tanstack/react-query\";\nimport { ReactQueryDevtools } from \"@tanstack/react-query-devtools\";\nimport { useState, type ReactNode } from \"react\";\n\nexport default function Providers({ children }: { children: ReactNode }) {\n  const [queryClient] = useState(\n    () =>\n      new QueryClient({\n        defaultOptions: {\n          queries: {\n            staleTime: 60 * 1000,\n          },\n        },\n      })\n  );\n\n  return (\n    <QueryClientProvider client={queryClient}>\n      {children}\n      <ReactQueryDevtools initialIsOpen={false} />\n    </QueryClientProvider>\n  );\n}\n"],"names":[],"mappings":";;;;AAEA;AAAA;AACA;AACA;;;AAJA;;;;AAMe,SAAS,UAAU,EAAE,QAAQ,EAA2B;;IACrE,MAAM,CAAC,YAAY,GAAG,CAAA,GAAA,6JAAA,CAAA,WAAQ,AAAD;8BAC3B,IACE,IAAI,gLAAA,CAAA,cAAW,CAAC;gBACd,gBAAgB;oBACd,SAAS;wBACP,WAAW,KAAK;oBAClB;gBACF;YACF;;IAGJ,qBACE,6LAAC,yLAAA,CAAA,sBAAmB;QAAC,QAAQ;;YAC1B;0BACD,6LAAC,uLAAA,CAAA,qBAAkB;gBAAC,eAAe;;;;;;;;;;;;AAGzC;GAlBwB;KAAA","debugId":null}}]
-}

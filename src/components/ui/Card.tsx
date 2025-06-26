@@ -1,17 +1,15 @@
 import React from "react";
+import { useThemeStore } from "@/store/useThemeStore";
 
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  padding?: "sm" | "md" | "lg";
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = "", padding = "md" }) => {
-  const paddingClasses = {
-    sm: "p-4",
-    md: "p-6",
-    lg: "p-8",
-  };
+export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
+  const { theme } = useThemeStore();
 
-  return <div className={`bg-white rounded-lg shadow-md border border-gray-200 ${paddingClasses[padding]} ${className}`}>{children}</div>;
+  const baseClasses = `p-6 rounded-lg shadow-md transition-colors duration-200 ${theme === "dark" ? "bg-gray-800 text-white border border-gray-700" : "bg-white text-gray-900 border border-gray-200"}`;
+
+  return <div className={`${baseClasses} ${className}`}>{children}</div>;
 };

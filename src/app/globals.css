@@ -3,11 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #516aec;
+  --primary-hover: #4058d4;
+  --primary-light: #7c8ff0;
+  --primary-dark: #3d4fc7;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +24,10 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #516aec;
+    --primary-hover: #7c8ff0;
+    --primary-light: #9ba8f3;
+    --primary-dark: #4058d4;
   }
 }
 

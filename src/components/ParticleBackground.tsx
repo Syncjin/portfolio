@@ -106,9 +106,15 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
   const initThree = (canvas: HTMLCanvasElement) => {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    // 부모 컨테이너의 크기를 가져옴
+    const container = canvas.parentElement;
+    const containerWidth = container?.clientWidth || window.innerWidth;
+    const containerHeight = container?.clientHeight || window.innerHeight;
+
+    const camera = new THREE.PerspectiveCamera(75, containerWidth / containerHeight, 0.1, 1000);
+
+    renderer.setSize(containerWidth, containerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.position.z = 5;
 
@@ -164,16 +170,20 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
     geometry.attributes.size.needsUpdate = true;
   };
 
-  const setupListeners = (camera: THREE.Camera, renderer: THREE.WebGLRenderer) => {
+  const setupListeners = (camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) => {
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
     const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const container = canvasRef.current?.parentElement;
+      const containerWidth = container?.clientWidth || window.innerWidth;
+      const containerHeight = container?.clientHeight || window.innerHeight;
+
+      camera.aspect = containerWidth / containerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(containerWidth, containerHeight);
     };
 
     window.addEventListener("mousemove", onMouseMove);

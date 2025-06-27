@@ -1,101 +1,318 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Text } from "@/components/ui/Text";
+import { Button } from "@/components/ui/Button";
+import { useThemeStore } from "@/store/useThemeStore";
+import { usePopupStore } from "@/store/usePopupStore";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // ProjectCard 컴포넌트 (ProjectsSection 내부에서만 사용)
+interface ProjectLink {
+  title: string;
+  url: string;
+}
 interface Project {
   id: number;
   title: string;
+  date: string;
   summary: string;
   description: string;
+  link?: ProjectLink[];
+  tags: string[];
+  image?: string;
+  width?: number;
+  height?: number;
+  isClosed?: boolean;
 }
 
 interface ProjectCardProps {
   project: Project;
 }
 
-function ProjectCard({ project }: ProjectCardProps) {
+const ProjectCard = React.forwardRef<HTMLDivElement, ProjectCardProps>(({ project }, ref) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 md:p-6 transition-colors min-h-[140px] flex flex-col gap-2 border border-gray-200 dark:border-gray-700">
-      <Text variant="h4" className="font-bold text-lg sm:text-xl md:text-2xl">
-        {project.title}
-      </Text>
-      <Text variant="body" className="text-gray-700 dark:text-gray-300">
-        {project.summary}
-      </Text>
-      <Text variant="body" className="text-gray-500 dark:text-gray-400 text-sm">
-        {project.description}
-      </Text>
+    <div
+      ref={ref}
+      className="rounded-lg overflow-hiddenflex items-center justify-center"
+      style={{
+        width: project.width || 420,
+        height: project.height || 240,
+      }}
+    >
+      {project.image ? (
+        <img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = "none";
+            target.nextElementSibling?.classList.remove("hidden");
+          }}
+        />
+      ) : null}
+      <div className={`text-gray-500 dark:text-gray-400 text-sm ${project.image ? "hidden" : ""}`}>{project.title}</div>
     </div>
   );
-}
+});
 
-// 샘플 프로젝트 데이터 6개
-const projects = [
+ProjectCard.displayName = "ProjectCard";
+
+const projects: Project[] = [
   {
     id: 1,
     title: "나중사",
+    date: "2023.01 ~ 2025.05",
     summary: "집을 조건에 따라 찾는 중개사 상담 서비스",
     description:
-      "React, Next.js, React-Native, Electron.js로 구성된 웹, 모바일, 데스크탑 앱 서비스입니다. 나중사 유저 웹은 나중사 소개 사이트이고, 중개사 웹은 중개사들이 매물을 등록, 제안하고 채팅으로 상담할 수 있습니다. React-Native로 유저앱, 중개사앱이 개발되었으며 Electron.js로 중개사 데스크탑앱을 개발했습니다.\n이 프로젝트로 저는 문제없고 생산성을 챙기기 위해 사내에 없던 Docker, GitHub Actions로 CI/CD를 구성하여 운영하었고, 상담 기능인 채팅을 위해 socket.io로 채팅 기능, 메시지별 UI를 구현하였습니다. \n기억나는 이슈 해결 경험으로는 Push와 DeepLink, 유입 경로 확인이 중요했던 서비스라서 Appsflyer를 적극 활용하였고 웹에서는 push message를 통해 sound가 재생되지 않아 필요에 의해 Electron.js로 데스크탑앱을 개발하여 배포하면서 멀티플랫폼 운영을 경험할 수 있었고 특히 중개사 유치를 위해.\n나중사 서비스를 위해 서울대학교 캠퍼스타운 입주, 예비창업패키지를 진행하며 투자유치를 위한 활동도 진행했습니다.",
+      "<b>프로젝트 요약</b>\nReact, Next.js, React-Native, Electron.js로 구성된 웹, 모바일, 데스크탑 앱 서비스입니다. 나중사 유저 웹은 나중사 소개 사이트이고, 중개사 웹은 중개사들이 매물을 등록, 제안하고 채팅으로 상담할 수 있습니다. React-Native로 유저앱, 중개사앱이 개발되었으며 Electron.js로 중개사 데스크탑앱을 개발했습니다.\n<b>주요 성과</b>\n문제없고 생산성을 챙기기 위해 사내에 없던 Docker, GitHub Actions로 CI/CD를 구성하여 운영하었고, 상담 기능인 채팅을 위해 socket.io로 채팅 기능, 메시지별 UI를 구현하였습니다. \n기억나는 이슈 해결 경험으로는 Push와 DeepLink, 유입 경로 확인이 중요했던 서비스라서 Appsflyer를 적극 활용하였고 웹에서는 push message를 통해 sound가 재생되지 않아 필요에 의해 Electron.js로 데스크탑앱을 개발하여 배포하면서 멀티플랫폼 운영을 경험할 수 있었습니다.\n<b>외부 활동</b>\n중개사 유치를 위해 나중사 서비스를 위해 서울대학교 캠퍼스타운 입주, 예비창업패키지를 진행하며 투자유치를 위한 활동도 진행했습니다.",
+    link: [
+      {
+        title: "유저웹",
+        url: "https://najoongsa.com",
+      },
+      {
+        title: "유저앱(Android)",
+        url: "https://play.google.com/store/apps/details?id=com.najoongsa.user.app&hl=ko",
+      },
+      {
+        title: "유저앱(iOS)",
+        url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC/id6470787996",
+      },
+      {
+        title: "중개사앱(Android)",
+        url: "https://play.google.com/store/apps/details?id=com.najoongsa.realtor.app&hl=ko",
+      },
+      {
+        title: "중개사앱(iOS)",
+        url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC-%EC%A4%91%EA%B0%9C%EC%82%AC-%EC%A0%84%EC%9A%A9/id6476068129",
+      },
+      {
+        title: "중개사 웹",
+        url: "https://realtor.najoongsa.com",
+      },
+    ],
+    tags: ["React", "Next.js", "React-native", "Electron.js", "Appsflyer", "Socket.io", "Docker", "Github actions", "Styled-components"],
+    image: "/projects/thumbnail_01.png",
+    width: 420,
+    height: 600,
   },
   {
     id: 2,
-    title: "리뷰얼마",
-    summary: "사용자 건강 데이터 트래킹 및 맞춤형 피드백 제공 모바일 앱.",
-    description: "React Native, Firebase 기반. 걸음수, 수면, 식단 기록 및 AI 건강 코칭 기능.",
+    title: "부산 EXPO the WAVE",
+    date: "2023.01 ~ 2023.06",
+    summary: "2030 부산세계박람회: 대한상공회의소",
+    description:
+      "<b>프로젝트 요약</b>\n부산 엑스포 유치를 위한 웹사이트로 환경이란 주제를 가진 커뮤니티 사이트입니다.\n<b>주요 성과</b>\nReact를 사용하지 않고 컴포넌트를 thymeleaf로 구현하였고 외국인에게 배포하기 위해 다국어 기능이 포함 되었습니다.",
+    link: [{ title: "웹사이트", url: "https://challenges.thewave.net/?lang=KO" }],
+    tags: ["Thymeleaf", "Java", "Spring"],
+    image: "/projects/thumbnail_02.png",
+    width: 420,
+    height: 400,
   },
   {
     id: 3,
-    title: "포트폴리오 웹사이트",
-    summary: "개인/기업용 반응형 포트폴리오 템플릿 및 커스텀 빌더.",
-    description: "Next.js, TailwindCSS, Vercel 배포. 다양한 테마, 섹션 커스터마이즈, SEO 최적화.",
+    title: "MBC Kokiri",
+    date: "2021.09 ~ 2022.07",
+    summary: "드라마 컨텐츠를 이용한 한국어 공부 앱, 관리자 사이트",
+    description:
+      "<b>프로젝트 요약</b>\n드라마 컨텐츠를 재생하는 플레이어와 한국어 공부를 할 수 있는 자막과 퀴즈를 제공하는 앱입니다.\n<b>주요성과</b>\nReact-Native, redux를 사용하여 개발되었고 한국과 베트남으로 배포하기 위해 다국어 기능을 적용했습니다. jw player를 사용하여 개발되었으나 개발당시 영상을 자막에 맞게 정지하거나 이동해야 기능이 있었고 jw player는 1초단위로만 이동이 가능해서 영상과 자막의 싱크가 안맞는 문제가 있었습니다. jw player sdk를 확인해 요구사항에 맞게 React-Native의 NativeModule로 커스텀하여 사용했던 경험이 있습니다.",
+    link: [
+      { title: "웹사이트", url: "https://kokiri.co/" },
+      { title: "AOS앱", url: "https://play.google.com/store/apps/details?id=com.koy.kokiri" },
+      { title: "IOS앱", url: "https://apps.apple.com/us/app/kokiri-learn-korean/id1585934625" },
+    ],
+    tags: ["React-native", "Next.js", "Redux", "JW Player"],
+    image: "/projects/thumbnail_03.png",
+    width: 420,
+    height: 600,
   },
   {
     id: 4,
-    title: "실시간 협업 문서 서비스",
-    summary: "여러 사용자가 동시에 편집 가능한 실시간 문서 협업 플랫폼.",
-    description: "React, WebSocket, Quill.js 기반. Google Docs 스타일의 동시 편집, 버전 관리, 댓글 기능.",
-  },
-  {
-    id: 5,
-    title: "이커머스 쇼핑몰",
-    summary: "상품 검색, 결제, 리뷰, 관리자 기능을 갖춘 풀스택 쇼핑몰.",
-    description: "Next.js, Express, MongoDB, Stripe 결제 연동. 반응형 UI, 관리자 대시보드, 주문/배송 관리.",
-  },
-  {
-    id: 6,
-    title: "사진 공유 SNS",
-    summary: "사진 업로드, 피드, 좋아요, 팔로우 기능을 제공하는 SNS 플랫폼.",
-    description: "React, Firebase, Cloud Storage 기반. 실시간 피드, 해시태그, 댓글, 알림 기능.",
+    title: "리뷰얼마",
+    date: "2020.06 ~ 2020.12",
+    summary: "영수증 인증을 통한 리뷰 작성에 대한 리워드 앱, 관리자 사이트",
+    description:
+      "<b>프로젝트 요약</b>\n입점한 매장에서 사장님이 리워드를 등록하고 해당 가게를 이용 후 리뷰를 작성한 유저가 리워드를 얻어가는 서비스입니다.\n<b>주요 성과</b>\n기존에는 리뷰만 작성하면 되었었는데 경쟁사중 네이버의 영수증인증이 나왔고 2주만에 기획, 디벨롭해서 OCR로 영수증을 분석하는 알고리즘을 개발 및 배포하였습니다. 네이버 기사에 나왔어서 순식간의 4000명의 사장님들을 만날 수 있었습니다.",
+    tags: ["React-native", "Next.js", "ocr"],
+    image: "/projects/thumbnail_04.png",
+    width: 420,
+    height: 600,
+    isClosed: true,
   },
 ];
 
 export default function ProjectsSection() {
-  // 항상 첫 번째 프로젝트만 설명에 노출
-  const activeProject = projects[0];
+  const { theme } = useThemeStore();
+  const { setOpen } = usePopupStore();
+  const projectsTextRef = useRef<HTMLDivElement>(null);
+  const [activeProject, setActiveProject] = useState(0);
+  const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const projectsText = "Projects";
+
+  useEffect(() => {
+    if (projectsTextRef.current) {
+      const chars = projectsTextRef.current.querySelectorAll(".projects-animated-char");
+      gsap.fromTo(
+        chars,
+        { y: 100, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "power3.out",
+        }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = projectRefs.current.findIndex((ref) => ref === entry.target);
+            if (index !== -1) {
+              setActiveProject(index);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.5, // 카드가 50% 이상 보일 때
+        rootMargin: "-20% 0px -20% 0px", // 화면 중앙 부근에서 트리거
+      }
+    );
+
+    projectRefs.current.forEach((ref) => {
+      if (ref) {
+        observer.observe(ref);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleShowDetail = async () => {
+    const project = projects[activeProject];
+    // description에서 <b>~</b> 부분을 찾아 분리
+    const desc = project.description;
+    const parts = desc.split(/(<b>.*?<\/b>)/g);
+    let lastWasTitle = false;
+    const parsedDesc = parts.map((part, idx) => {
+      if (part.startsWith("<b>") && part.endsWith("</b>")) {
+        const text = part.replace(/<\/?b>/g, "");
+        lastWasTitle = true;
+        return (
+          <h4 key={idx} className="text-lg font-bold text-gray-900 dark:text-white mt-6 mb-2">
+            {text}
+          </h4>
+        );
+      } else if (part.trim() !== "") {
+        // 제목 다음 본문이면 마진-top 0, 아니면 기본 마진
+        const className = lastWasTitle ? "whitespace-pre-line text-base text-gray-700 dark:text-gray-200 mb-2 mt-0" : "whitespace-pre-line text-base text-gray-700 dark:text-gray-200 mb-2 mt-2";
+        lastWasTitle = false;
+        return (
+          <p key={idx} className={className}>
+            {part}
+          </p>
+        );
+      } else {
+        return null;
+      }
+    });
+    await setOpen({
+      type: "alert",
+      title: project.title,
+      msg: <div>{parsedDesc}</div>,
+    });
+  };
 
   return (
-    <section id="projects" className="w-full px-2 sm:px-4 md:px-6 lg:px-8 bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-white py-12 md:py-20">
-      <div className="flex flex-col md:flex-row gap-8 w-full">
+    <section
+      id="projects"
+      className="w-full px-2 sm:px-4 md:px-6 lg:px-8 py-12 md:py-20"
+      style={{
+        background: "#202127",
+        color: theme === "dark" ? "#fff" : "#18181b",
+        transition: "background 0.3s, color 0.3s",
+      }}
+    >
+      <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4 sticky top-20 z-10">
+        <Text variant="h2" className="text-left text-6xl" color="white" ignoreTheme>
+          {projectsText.split("").map((char, idx) => (
+            <span key={idx} className="projects-animated-char inline-block whitespace-pre">
+              {char}
+            </span>
+          ))}
+        </Text>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto">
         {/* 좌측: 제목 + 설명 (sticky) */}
-        <div className="w-full md:w-1/2 flex flex-col items-start justify-start pt-2 md:pt-12 pl-2 md:pl-8 md:sticky md:top-20 md:h-fit z-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">Projects</h2>
-          <div className="bg-white/80 dark:bg-gray-800/80 rounded-xl shadow p-4 md:p-8 min-h-[180px] w-full transition-colors">
-            <Text variant="h3" className="mb-2 text-xl sm:text-2xl md:text-3xl font-semibold">
-              {activeProject.title}
+        <div className="w-full md:w-1/2 flex flex-col items-start justify-start md:sticky md:top-70 md:h-fit z-10">
+          <div className="dark:bg-gray-800/80 min-h-[180px] w-full transition-colors pl-4">
+            <Text className="text-2xl font-medium" style={{ color: "#FFAD3A" }}>
+              Main Project
             </Text>
-            <Text variant="body" className="mb-2 text-base sm:text-lg text-gray-700 dark:text-gray-300">
-              {activeProject.summary}
+            <Text variant="h3" className="mt-4 text-xl sm:text-2xl md:text-3xl font-semibold" ignoreTheme style={{ color: "#fff" }}>
+              {projects[activeProject].title}
             </Text>
-            <Text variant="body" className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
-              {activeProject.description}
+            <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#fff", opacity: 0.6 }}>
+              {projects[activeProject].date}
             </Text>
+            {projects[activeProject].isClosed && (
+              <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#FE4747" }}>
+                *종료된 서비스입니다.
+              </Text>
+            )}
+            <Text variant="body" className="mt-9 text-base sm:text-lg text-gray-700 dark:text-gray-300" ignoreTheme style={{ color: "#fff" }}>
+              {projects[activeProject].summary}
+            </Text>
+
+            <div className="flex flex-col gap-2 mt-8">
+              {projects[activeProject].link?.map((link) => (
+                <div key={link.title} className="flex flex-row gap-3 items-center group">
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-white group-hover:scale-110 transition-transform duration-200">
+                    {`- ${link.title}`}
+                  </a>
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
+                    <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-row gap-3 flex-wrap mt-9">
+              {projects[activeProject].tags.map((tag) => (
+                <div key={tag} className="rounded-2xl px-3 py-1 text-base" style={{ backgroundColor: "#3D4DB363", color: "#fff" }}>
+                  {tag}
+                </div>
+              ))}
+            </div>
+
+            <Button
+              className="mt-8 bg-transparent border border-white/50 text-white rounded-none text-base hover:border-[#FFAD3A] hover:text-[#FFAD3A] hover:bg-transparent"
+              onClick={handleShowDetail}
+            >
+              자세히 보기
+            </Button>
           </div>
         </div>
         {/* 우측: 카드 리스트 (1열) */}
-        <div className="w-full md:w-1/2 flex flex-col gap-8">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+        <div className="flex flex-col gap-8" style={{ width: "420px" }}>
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              ref={(el) => {
+                projectRefs.current[index] = el;
+              }}
+            />
           ))}
         </div>
       </div>

@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useEffect } from "react";
 import { Text } from "@/components/ui/Text";
 import { Tag } from "@/components/ui/Tag";
@@ -86,14 +87,14 @@ export default function SkillsSection() {
         transition: "background 0.3s, color 0.3s",
       }}
     >
-      <div ref={skillsTextRef} className="mb-12 w-full pt-12 pl-4">
-        <h2 className="text-3xl font-bold text-left">
+      <div ref={skillsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4">
+        <Text variant="h2" className="text-left text-6xl">
           {skillsText.split("").map((char, idx) => (
-            <span key={idx} className="skills-animated-char inline-block">
+            <span key={idx} className="skills-animated-char inline-block whitespace-pre">
               {char}
             </span>
           ))}
-        </h2>
+        </Text>
       </div>
       <div className="w-full max-w-3xl space-y-10">
         {/* Programming Languages */}

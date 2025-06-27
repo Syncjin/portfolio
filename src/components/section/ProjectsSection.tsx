@@ -35,9 +35,8 @@ const ProjectCard = React.forwardRef<HTMLDivElement, ProjectCardProps>(({ projec
   return (
     <div
       ref={ref}
-      className="rounded-lg overflow-hiddenflex items-center justify-center"
+      className="rounded-lg overflow-hiddenflex items-center justify-center w-[80vw] max-w-full mx-auto md:w-[420px]"
       style={{
-        width: project.width || 420,
         height: project.height || 240,
       }}
     >
@@ -45,7 +44,7 @@ const ProjectCard = React.forwardRef<HTMLDivElement, ProjectCardProps>(({ projec
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-contain"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = "none";
@@ -197,8 +196,8 @@ export default function ProjectsSection() {
     return () => observer.disconnect();
   }, []);
 
-  const handleShowDetail = async () => {
-    const project = projects[activeProject];
+  const handleShowDetail = async (idx?: number) => {
+    const project = typeof idx === "number" ? projects[idx] : projects[activeProject];
     // description에서 <b>~</b> 부분을 찾아 분리
     const desc = project.description;
     const parts = desc.split(/(<b>.*?<\/b>)/g);
@@ -208,13 +207,14 @@ export default function ProjectsSection() {
         const text = part.replace(/<\/?b>/g, "");
         lastWasTitle = true;
         return (
-          <h4 key={idx} className="text-lg font-bold text-gray-900 dark:text-white mt-6 mb-2">
+          <h4 key={idx} className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-6 mb-2">
             {text}
           </h4>
         );
       } else if (part.trim() !== "") {
-        // 제목 다음 본문이면 마진-top 0, 아니면 기본 마진
-        const className = lastWasTitle ? "whitespace-pre-line text-base text-gray-700 dark:text-gray-200 mb-2 mt-0" : "whitespace-pre-line text-base text-gray-700 dark:text-gray-200 mb-2 mt-2";
+        const className = lastWasTitle
+          ? "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-0"
+          : "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-2";
         lastWasTitle = false;
         return (
           <p key={idx} className={className}>
@@ -242,8 +242,8 @@ export default function ProjectsSection() {
         transition: "background 0.3s, color 0.3s",
       }}
     >
-      <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4 sticky top-20 z-10">
-        <Text variant="h2" className="text-left text-6xl" color="white" ignoreTheme>
+      <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4 md:sticky md:top-20 z-10">
+        <Text variant="h2" className="text-left text-3xl sm:text-5xl md:text-6xl" color="white" ignoreTheme>
           {projectsText.split("").map((char, idx) => (
             <span key={idx} className="projects-animated-char inline-block whitespace-pre">
               {char}
@@ -252,67 +252,125 @@ export default function ProjectsSection() {
         </Text>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto">
-        {/* 좌측: 제목 + 설명 (sticky) */}
-        <div className="w-full md:w-1/2 flex flex-col items-start justify-start md:sticky md:top-70 md:h-fit z-10">
-          <div className="dark:bg-gray-800/80 min-h-[180px] w-full transition-colors pl-4">
-            <Text className="text-2xl font-medium" style={{ color: "#FFAD3A" }}>
-              Main Project
-            </Text>
-            <Text variant="h3" className="mt-4 text-xl sm:text-2xl md:text-3xl font-semibold" ignoreTheme style={{ color: "#fff" }}>
-              {projects[activeProject].title}
-            </Text>
-            <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#fff", opacity: 0.6 }}>
-              {projects[activeProject].date}
-            </Text>
-            {projects[activeProject].isClosed && (
-              <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#FE4747" }}>
-                *종료된 서비스입니다.
+      {/* PC: 기존 구조, 모바일: 설명+이미지 세트로 나열 */}
+      <div className="w-full max-w-6xl mx-auto">
+        {/* PC: flex-row, 모바일: flex-col */}
+        <div className="hidden md:flex flex-col md:flex-row gap-8">
+          {/* 좌측: 제목 + 설명 (sticky) */}
+          <div className="w-full md:w-1/2 flex flex-col items-start justify-start md:sticky md:top-70 md:h-fit z-10">
+            <div className="dark:bg-gray-800/80 min-h-[180px] w-full transition-colors pl-4">
+              <Text className="text-2xl font-medium" style={{ color: "#FFAD3A" }}>
+                Main Project
               </Text>
-            )}
-            <Text variant="body" className="mt-9 text-base sm:text-lg text-gray-700 dark:text-gray-300" ignoreTheme style={{ color: "#fff" }}>
-              {projects[activeProject].summary}
-            </Text>
-
-            <div className="flex flex-col gap-2 mt-8">
-              {projects[activeProject].link?.map((link) => (
-                <div key={link.title} className="flex flex-row gap-3 items-center group">
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-white group-hover:scale-110 transition-transform duration-200">
-                    {`- ${link.title}`}
-                  </a>
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
-                    <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
-                  </a>
-                </div>
-              ))}
+              <Text variant="h3" className="mt-4 text-xl sm:text-2xl md:text-3xl font-semibold" ignoreTheme style={{ color: "#fff" }}>
+                {projects[activeProject].title}
+              </Text>
+              <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#fff", opacity: 0.6 }}>
+                {projects[activeProject].date}
+              </Text>
+              {projects[activeProject].isClosed && (
+                <Text className="mt-4 text-base sm:text-lg" ignoreTheme style={{ color: "#FE4747" }}>
+                  *종료된 서비스입니다.
+                </Text>
+              )}
+              <Text variant="body" className="mt-9 text-base sm:text-lg text-gray-700 dark:text-gray-300" ignoreTheme style={{ color: "#fff" }}>
+                {projects[activeProject].summary}
+              </Text>
+              <div className="flex flex-col gap-2 mt-8">
+                {projects[activeProject].link?.map((link) => (
+                  <div key={link.title} className="flex flex-row gap-3 items-center group">
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-white group-hover:scale-110 transition-transform duration-200">
+                      {`- ${link.title}`}
+                    </a>
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
+                      <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
+                    </a>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-row gap-3 flex-wrap mt-9">
+                {projects[activeProject].tags.map((tag) => (
+                  <div key={tag} className="rounded-2xl px-3 py-1 text-base" style={{ backgroundColor: "#3D4DB363", color: "#fff" }}>
+                    {tag}
+                  </div>
+                ))}
+              </div>
+              <Button
+                className="mt-8 bg-transparent border border-white/50 text-white rounded-none text-base hover:border-[#FFAD3A] hover:text-[#FFAD3A] hover:bg-transparent"
+                onClick={() => handleShowDetail(activeProject)}
+              >
+                자세히 보기
+              </Button>
             </div>
-
-            <div className="flex flex-row gap-3 flex-wrap mt-9">
-              {projects[activeProject].tags.map((tag) => (
-                <div key={tag} className="rounded-2xl px-3 py-1 text-base" style={{ backgroundColor: "#3D4DB363", color: "#fff" }}>
-                  {tag}
-                </div>
-              ))}
-            </div>
-
-            <Button
-              className="mt-8 bg-transparent border border-white/50 text-white rounded-none text-base hover:border-[#FFAD3A] hover:text-[#FFAD3A] hover:bg-transparent"
-              onClick={handleShowDetail}
-            >
-              자세히 보기
-            </Button>
+          </div>
+          {/* 우측: 카드 리스트 (1열) */}
+          <div className="flex flex-col gap-8" style={{ width: "420px" }}>
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                ref={(el) => {
+                  projectRefs.current[index] = el;
+                }}
+              />
+            ))}
           </div>
         </div>
-        {/* 우측: 카드 리스트 (1열) */}
-        <div className="flex flex-col gap-8" style={{ width: "420px" }}>
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              ref={(el) => {
-                projectRefs.current[index] = el;
-              }}
-            />
+
+        {/* 모바일: 각 프로젝트마다 설명+이미지 세트로 세로 나열 */}
+        <div className="flex flex-col gap-12 md:hidden">
+          {projects.map((project, idx) => (
+            <div key={project.id} className="flex flex-col gap-4">
+              {/* 설명 */}
+              <div className="dark:bg-gray-800/80 min-h-[180px] w-full transition-colors pl-2">
+                <Text className="text-2xl font-medium" style={{ color: "#FFAD3A" }}>
+                  Main Project
+                </Text>
+                <Text variant="h3" className="mt-4 text-xl font-semibold" ignoreTheme style={{ color: "#fff" }}>
+                  {project.title}
+                </Text>
+                <Text className="mt-4 text-base" ignoreTheme style={{ color: "#fff", opacity: 0.6 }}>
+                  {project.date}
+                </Text>
+                {project.isClosed && (
+                  <Text className="mt-4 text-base" ignoreTheme style={{ color: "#FE4747" }}>
+                    *종료된 서비스입니다.
+                  </Text>
+                )}
+                <Text variant="body" className="mt-9 text-base text-gray-700 dark:text-gray-300" ignoreTheme style={{ color: "#fff" }}>
+                  {project.summary}
+                </Text>
+                <div className="flex flex-col gap-2 mt-8">
+                  {project.link?.map((link) => (
+                    <div key={link.title} className="flex flex-row gap-3 items-center group">
+                      <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-sm text-white group-hover:scale-110 transition-transform duration-200">
+                        {`- ${link.title}`}
+                      </a>
+                      <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
+                        <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-row gap-3 flex-wrap mt-9">
+                  {project.tags.map((tag) => (
+                    <div key={tag} className="rounded-2xl px-3 py-1 text-base" style={{ backgroundColor: "#3D4DB363", color: "#fff" }}>
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  className="mt-8 bg-transparent border border-white/50 text-white rounded-none text-base hover:border-[#FFAD3A] hover:text-[#FFAD3A] hover:bg-transparent"
+                  onClick={() => handleShowDetail(idx)}
+                >
+                  자세히 보기
+                </Button>
+              </div>
+              {/* 이미지 */}
+              <div className="w-full">
+                <ProjectCard project={project} />
+              </div>
+            </div>
           ))}
         </div>
       </div>

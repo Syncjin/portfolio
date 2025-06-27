@@ -19,19 +19,17 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="flex flex-col justify-center items-center mx-auto px-2 sm:px-4 md:px-6 lg:px-8"
+      className="flex flex-col justify-center items-center mx-auto px-2 sm:px-4 md:px-6 lg:px-8 min-h-[100vh] md:min-h-[960px] md:max-h-[960px]"
       style={{
         background: theme === "dark" ? "#18181b" : "#fff",
         color: theme === "dark" ? "#fff" : "#18181b",
         transition: "background 0.3s, color 0.3s",
-        maxHeight: "960px",
-        height: "960px",
       }}
     >
       <ParticleBackground particleCount={50} particleSizeRange={[0.1, 0.3]} particleSpeed={0.01} areaSize={5} />
       <div className="text-center relative z-20 w-full flex flex-col items-center">
         <div
-          className="mb-6 text-2xl sm:text-3xl md:text-4xl font-normal break-keep leading-tight max-w-xs sm:max-w-md md:max-w-2xl relative z-10"
+          className="mb-6 text-xl sm:text-2xl md:text-4xl font-normal break-keep leading-tight max-w-xs sm:max-w-md md:max-w-2xl relative z-10"
           style={{
             animation: "slideInUp 1s ease-out 1s both",
             opacity: 0,
@@ -58,9 +56,8 @@ export default function AboutSection() {
           color="white"
           align="center"
           ignoreTheme={true}
-          className="absolute text-2xl sm:text-3xl md:text-4xl font-bold break-keep leading-tight max-w-xs sm:max-w-md md:max-w-2xl"
+          className="absolute font-bold break-keep leading-tight max-w-xs sm:max-w-md md:max-w-2xl text-[48px] sm:text-[72px] md:text-[128px]"
           style={{
-            fontSize: "128px",
             color: "#EEEEEE",
             zIndex: 1,
             top: "-55%",

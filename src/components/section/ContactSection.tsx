@@ -52,7 +52,7 @@ export default function ContactSection() {
       }}
     >
       <div ref={aboutMeTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4">
-        <Text variant="h2" className="text-left text-6xl">
+        <Text variant="h2" className="text-left text-3xl sm:text-5xl md:text-6xl">
           {aboutMeText.split("").map((char, idx) => (
             <span key={idx} className="about-me-animated-char inline-block whitespace-pre">
               {char}

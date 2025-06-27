@@ -80,7 +80,7 @@ export default function SkillsSection() {
   return (
     <section
       id="skills"
-      className={`min-h-screen flex flex-col justify-center items-center mx-auto px-4 sm:px-6 lg:px-8`}
+      className={`min-h-screen flex flex-col justify-center items-center mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-0`}
       style={{
         background: theme === "dark" ? "#18181b" : "#fff",
         color: theme === "dark" ? "#fff" : "#18181b",
@@ -88,7 +88,7 @@ export default function SkillsSection() {
       }}
     >
       <div ref={skillsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4">
-        <Text variant="h2" className="text-left text-6xl">
+        <Text variant="h2" className="text-left text-3xl sm:text-5xl md:text-6xl">
           {skillsText.split("").map((char, idx) => (
             <span key={idx} className="skills-animated-char inline-block whitespace-pre">
               {char}

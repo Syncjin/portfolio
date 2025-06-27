@@ -31,7 +31,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({ imageSrc, imageAlt, title, c
         maxWidth: "386px",
       }}
     >
-      <img src={imageSrc} alt={imageAlt} style={{ width: "40px", height: "40px" }} className="mr-4" />
+      <img src={imageSrc} alt={imageAlt} className="mr-4 w-8 h-8 sm:w-10 sm:h-10" />
       <div className="flex flex-col gap-4">
         <Text variant="body" className="font-bold text-sm">
           {title}

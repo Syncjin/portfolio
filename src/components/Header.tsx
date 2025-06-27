@@ -2,26 +2,50 @@ import React from "react";
 import { useThemeStore } from "@/store/useThemeStore";
 
 const sections = [
-  { id: "hero", label: "소개" },
+  { id: "about", label: "소개" },
   { id: "skills", label: "기술 스택" },
   { id: "projects", label: "프로젝트" },
   { id: "contact", label: "연락처" },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  activeSection?: string;
+}
+
+export default function Header({ activeSection }: HeaderProps) {
   const { theme, toggleTheme } = useThemeStore();
 
   return (
-    <header className={`fixed top-0 left-0 w-full shadow z-50 transition-colors duration-200 ${theme === "dark" ? "bg-gray-900 bg-opacity-80 text-white" : "bg-white bg-opacity-80 text-gray-900"}`}>
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+    <header
+      id="header"
+      className={`fixed top-0 left-0 w-full shadow z-50 transition-colors duration-200 ${theme === "dark" ? "bg-gray-900 bg-opacity-80 text-white" : "bg-white bg-opacity-80 text-gray-900"}`}
+    >
+      <nav className="mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div className="font-bold text-lg">My Portfolio</div>
         <div className="flex items-center space-x-6">
           <ul className="flex space-x-6">
             {sections.map((section) => (
               <li key={section.id}>
-                <a href={`#${section.id}`} className={`transition-colors font-medium ${theme === "dark" ? "text-gray-300 hover:text-[#7c8ff0]" : "text-gray-700 hover:text-[#516aec]"}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sectionEl = document.getElementById(section.id);
+                    const headerEl = document.getElementById("header");
+                    if (sectionEl && headerEl) {
+                      const headerHeight = headerEl.offsetHeight;
+                      const sectionTop = sectionEl.getBoundingClientRect().top + window.scrollY;
+                      window.scrollTo({
+                        top: sectionTop - headerHeight,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  className={`transition-colors font-medium bg-transparent border-0 p-0 m-0 cursor-pointer focus:outline-none ${
+                    theme === "dark" ? "text-gray-300 hover:text-[#7c8ff0]" : "text-gray-700 hover:text-[#516aec]"
+                  } ${activeSection === section.id ? (theme === "dark" ? "text-[#7c8ff0] underline underline-offset-4" : "text-[#516aec] underline underline-offset-4") : ""}`}
+                >
                   {section.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>

@@ -20,7 +20,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /root/syncjin/portfolio
+            cd /syncjin/portfolio
             git pull origin main
 
             # SSL 설정 파일들이 있는지 확인하고 없으면 생성

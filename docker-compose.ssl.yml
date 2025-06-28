@@ -36,7 +36,7 @@ services:
     command: >
       sh -c "
         # 인증서가 없으면 HTTP 모드로 시작
-        if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
+        if [ ! -f /etc/letsencrypt/live/syncjin.com/fullchain.pem ]; then
           echo 'SSL 인증서가 없습니다. HTTP 모드로 시작합니다.'
           # HTTP 전용 설정으로 시작
           sed 's/listen 443 ssl http2;/# listen 443 ssl http2;/g; s/ssl_certificate/# ssl_certificate/g; s/ssl_certificate_key/# ssl_certificate_key/g' /etc/nginx/nginx.conf > /tmp/nginx-http.conf
@@ -56,12 +56,12 @@ services:
     command: >
       sh -c "
         # 인증서가 없으면 발급 시도
-        if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
+        if [ ! -f /etc/letsencrypt/live/syncjin.com/fullchain.pem ]; then
           echo 'SSL 인증서를 발급합니다...'
-          certbot certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email --staging -d ${DOMAIN}
+          certbot certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email --staging -d syncjin.com
           if [ $? -eq 0 ]; then
             echo '스테이징 인증서 발급 성공. 실제 인증서를 발급합니다...'
-            certbot certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN}
+            certbot certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email -d syncjin.com
           fi
         else
           echo 'SSL 인증서가 이미 존재합니다.'

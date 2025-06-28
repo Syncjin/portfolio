@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Text } from "@/components/ui/Text";
-import { Button } from "@/components/ui/Button";
+"use client";
+import React, { useRef, useEffect, useState, forwardRef } from "react";
+import { Text, Button } from "@/components/ui";
 import { useThemeStore } from "@/store/useThemeStore";
 import { usePopupStore } from "@/store/usePopupStore";
 import gsap from "gsap";
+import Image from "next/image";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -31,19 +32,21 @@ interface ProjectCardProps {
   project: Project;
 }
 
-const ProjectCard = React.forwardRef<HTMLDivElement, ProjectCardProps>(({ project }, ref) => {
+const ProjectCard = forwardRef<HTMLDivElement, ProjectCardProps>(({ project }, ref) => {
   return (
     <div
       ref={ref}
-      className="rounded-lg overflow-hiddenflex items-center justify-center w-[80vw] max-w-full mx-auto md:w-[420px]"
+      className="rounded-lg overflow-hidden cursor-pointer w-9/10 md:w-[420px] mx-auto md:mx-0"
       style={{
         height: project.height || 240,
       }}
     >
       {project.image ? (
-        <img
+        <Image
           src={project.image}
           alt={project.title}
+          width={project.width || 420}
+          height={project.height || 240}
           className="w-full h-auto object-contain"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -283,7 +286,7 @@ export default function ProjectsSection() {
                       {`- ${link.title}`}
                     </a>
                     <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
-                      <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
+                      <Image src="/projects/export.png" alt={link.title} width={16} height={16} className="w-full h-full object-cover" />
                     </a>
                   </div>
                 ))}
@@ -347,7 +350,7 @@ export default function ProjectsSection() {
                         {`- ${link.title}`}
                       </a>
                       <a href={link.url} target="_blank" rel="noopener noreferrer" className="group-hover:scale-110 transition-transform duration-200">
-                        <img src="/projects/export.png" alt={link.title} className="w-full h-full object-cover" style={{ width: 16, height: 16 }} />
+                        <Image src="/projects/export.png" alt={link.title} width={16} height={16} className="w-full h-full object-cover" />
                       </a>
                     </div>
                   ))}

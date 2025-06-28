@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 interface TagProps {
   icon?: string;
@@ -27,7 +28,7 @@ const Tag: React.FC<TagProps> = ({ icon, text, className, delay = 0 }) => {
         transitionDelay: `${delay}ms`,
       }}
     >
-      {icon && <img src={icon} alt={text} className="w-5 h-5 mr-2" />}
+      {icon && <Image src={icon} alt={text} width={20} height={20} className="w-5 h-5 mr-2" />}
       {text}
     </span>
   );

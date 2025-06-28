@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { Text } from "./Text";
 
 interface InfoCardProps {
@@ -31,7 +32,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({ imageSrc, imageAlt, title, c
         maxWidth: "386px",
       }}
     >
-      <img src={imageSrc} alt={imageAlt} className="mr-4 w-8 h-8 sm:w-10 sm:h-10" />
+      <Image src={imageSrc} alt={imageAlt} width={40} height={40} className="mr-4 w-8 h-8 sm:w-10 sm:h-10" />
       <div className="flex flex-col gap-4">
         <Text variant="body" className="font-bold text-sm">
           {title}

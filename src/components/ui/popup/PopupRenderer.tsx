@@ -1,7 +1,7 @@
 "use client";
 import { usePopupStore } from "@/store/usePopupStore";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { PopupListItemProps } from "@/types/popup";
 
 const AlertPopup = dynamic(() => import("./AlertPopup"), { ssr: false });
@@ -12,29 +12,35 @@ function PopupRenderer() {
 
   console.log("PopupRenderer 렌더링, popupList:", popupList);
 
-  const handleClose = (popupIdx: number, _resolve?: (value: unknown) => unknown) => {
-    console.log("팝업 닫기:", popupIdx);
-    if (_resolve) {
-      _resolve(false);
-    }
-    setCloseHide(popupIdx);
-    // 애니메이션 완료 후 팝업 제거
-    setTimeout(() => {
-      setClose(popupIdx);
-    }, 200);
-  };
+  const handleClose = useCallback(
+    (popupIdx: number, _resolve?: (value: unknown) => unknown) => {
+      console.log("팝업 닫기:", popupIdx);
+      if (_resolve) {
+        _resolve(false);
+      }
+      setCloseHide(popupIdx);
+      // 애니메이션 완료 후 팝업 제거
+      setTimeout(() => {
+        setClose(popupIdx);
+      }, 200);
+    },
+    [setClose, setCloseHide]
+  );
 
-  const handleConfirm = (popupIdx: number, _resolve?: (value: unknown) => unknown) => {
-    console.log("팝업 확인:", popupIdx);
-    if (_resolve) {
-      _resolve(true);
-    }
-    setCloseHide(popupIdx);
-    // 애니메이션 완료 후 팝업 제거
-    setTimeout(() => {
-      setClose(popupIdx);
-    }, 200);
-  };
+  const handleConfirm = useCallback(
+    (popupIdx: number, _resolve?: (value: unknown) => unknown) => {
+      console.log("팝업 확인:", popupIdx);
+      if (_resolve) {
+        _resolve(true);
+      }
+      setCloseHide(popupIdx);
+      // 애니메이션 완료 후 팝업 제거
+      setTimeout(() => {
+        setClose(popupIdx);
+      }, 200);
+    },
+    [setClose, setCloseHide]
+  );
 
   const popupView = useMemo(() => {
     console.log("popupView 계산, popupList:", popupList);
@@ -66,7 +72,7 @@ function PopupRenderer() {
           return <></>;
       }
     });
-  }, [popupList, setClose, setCloseHide]);
+  }, [popupList, handleClose, handleConfirm]);
 
   return <div id="popupContainerWrap">{popupView}</div>;
 }

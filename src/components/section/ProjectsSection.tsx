@@ -245,7 +245,7 @@ export default function ProjectsSection() {
         transition: "background 0.3s, color 0.3s",
       }}
     >
-      <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4 md:sticky md:top-20 z-10">
+      <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4  z-10">
         <Text variant="h2" className="text-left text-3xl sm:text-5xl md:text-6xl" color="white" ignoreTheme>
           {projectsText.split("").map((char, idx) => (
             <span key={idx} className="projects-animated-char inline-block whitespace-pre">
@@ -255,12 +255,10 @@ export default function ProjectsSection() {
         </Text>
       </div>
 
-      {/* PC: 기존 구조, 모바일: 설명+이미지 세트로 나열 */}
       <div className="w-full max-w-6xl mx-auto">
-        {/* PC: flex-row, 모바일: flex-col */}
         <div className="hidden md:flex flex-col md:flex-row gap-8">
           {/* 좌측: 제목 + 설명 (sticky) */}
-          <div className="w-full md:w-1/2 flex flex-col items-start justify-start md:sticky md:top-70 md:h-fit z-10">
+          <div className="w-full md:w-1/2 flex flex-col items-start justify-start md:sticky md:top-30 md:h-fit z-10">
             <div className="dark:bg-gray-800/80 min-h-[180px] w-full transition-colors pl-4">
               <Text className="text-2xl font-medium" style={{ color: "#FFAD3A" }}>
                 Main Project

@@ -23,13 +23,26 @@ jobs:
             cd /syncjin/portfolio
             git pull origin main
 
-            # SSL 설정 파일들이 있는지 확인하고 없으면 생성
-            if [ ! -f "nginx.ssl.conf" ]; then
+            # SSL 설정 파일들이 있는지 확인
+            if [ -f "nginx.ssl.conf" ] && [ -f "docker-compose.ssl.yml" ]; then
+              echo "SSL 설정 파일이 있습니다. HTTPS 모드로 실행합니다."
+              
+              # SSL 초기화 스크립트 실행
+              if [ -f "init-ssl.sh" ]; then
+                chmod +x init-ssl.sh
+                ./init-ssl.sh
+              fi
+              
+              # 기존 컨테이너 중지
+              docker compose down
+              
+              # SSL 모드로 실행
+              docker compose -f docker-compose.ssl.yml up -d --build
+              
+              echo "SSL 모드로 배포 완료!"
+            else
               echo "SSL 설정 파일이 없습니다. HTTP 모드로 실행합니다."
               docker compose down
               docker compose up -d --build
-            else
-              echo "SSL 설정 파일이 있습니다. HTTPS 모드로 실행합니다."
-              docker compose down
-              docker compose -f docker-compose.ssl.yml up -d --build
+              echo "HTTP 모드로 배포 완료!"
             fi

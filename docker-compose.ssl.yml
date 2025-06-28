@@ -1,50 +1,78 @@
 version: "3.8"
 
 services:
-  portfolio:
-    # pnpm 기반 빌드/실행
+  nextjs:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    container_name: portfolio-nextjs
+    restart: unless-stopped
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
     networks:
-      - app-network
+      - portfolio-network
+    volumes:
+      - ./public:/app/public
+    depends_on:
+      - certbot
 
-  nginx-ssl:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
+  nginx:
+    image: nginx:alpine
+    container_name: portfolio-nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-    depends_on:
-      - portfolio
-    restart: unless-stopped
-    networks:
-      - app-network
     volumes:
       - ./nginx.ssl.conf:/etc/nginx/nginx.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /var/lib/letsencrypt:/var/lib/letsencrypt:ro
-      - certbot-www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - nginx-logs:/var/log/nginx
+    networks:
+      - portfolio-network
+    depends_on:
+      - nextjs
+      - certbot
+    command: >
+      sh -c "
+        # 인증서가 없으면 HTTP 모드로 시작
+        if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
+          echo 'SSL 인증서가 없습니다. HTTP 모드로 시작합니다.'
+          # HTTP 전용 설정으로 시작
+          sed 's/listen 443 ssl http2;/# listen 443 ssl http2;/g; s/ssl_certificate/# ssl_certificate/g; s/ssl_certificate_key/# ssl_certificate_key/g' /etc/nginx/nginx.conf > /tmp/nginx-http.conf
+          nginx -c /tmp/nginx-http.conf
+        else
+          echo 'SSL 인증서가 있습니다. HTTPS 모드로 시작합니다.'
+          nginx -g 'daemon off;'
+        fi
+      "
 
   certbot:
     image: certbot/certbot
+    container_name: portfolio-certbot
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /var/lib/letsencrypt:/var/lib/letsencrypt
-      - certbot-www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email -d syncjin.com -d www.syncjin.com
-    depends_on:
-      - nginx-ssl
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: >
+      sh -c "
+        # 인증서가 없으면 발급 시도
+        if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
+          echo 'SSL 인증서를 발급합니다...'
+          certbot certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email --staging -d ${DOMAIN}
+          if [ $? -eq 0 ]; then
+            echo '스테이징 인증서 발급 성공. 실제 인증서를 발급합니다...'
+            certbot certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN}
+          fi
+        else
+          echo 'SSL 인증서가 이미 존재합니다.'
+        fi
+        # certbot 컨테이너는 종료
+        exit 0
+      "
 
 volumes:
-  certbot-www:
+  nginx-logs:
 
 networks:
-  app-network:
+  portfolio-network:
     driver: bridge

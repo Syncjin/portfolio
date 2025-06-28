@@ -4,6 +4,7 @@ import path from "path";
 const nextConfig: NextConfig = {
   /* config options here */
   distDir: "dist",
+  output: "standalone",
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -27,14 +27,9 @@ jobs:
             if [ -f "nginx.ssl.conf" ] && [ -f "docker-compose.ssl.yml" ]; then
               echo "SSL 설정 파일이 있습니다. HTTPS 모드로 실행합니다."
               
-              # SSL 초기화 스크립트 실행
-              if [ -f "init-ssl.sh" ]; then
-                chmod +x init-ssl.sh
-                ./init-ssl.sh
-              fi
-              
               # 기존 컨테이너 중지
               docker compose down
+              docker compose -f docker-compose.ssl.yml down
               
               # SSL 모드로 실행
               docker compose -f docker-compose.ssl.yml up -d --build

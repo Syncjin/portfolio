@@ -3,13 +3,8 @@ FROM nginx:alpine
 # Nginx 설정 파일 복사
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# 환경변수 처리 스크립트 복사
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
 # 포트 80 노출
 EXPOSE 80
 
-# 환경변수 처리 후 Nginx 시작
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Nginx 시작
 CMD ["nginx", "-g", "daemon off;"] 

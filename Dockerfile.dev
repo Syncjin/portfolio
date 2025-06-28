@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install
 
-# 소스 코드 복사
+# 소스 코드 복사 (개발 모드에서는 dist 폴더를 사용하지 않음)
 COPY . .
 
 EXPOSE 3000

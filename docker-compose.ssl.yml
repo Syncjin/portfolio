@@ -53,22 +53,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: >
-      sh -c "
-        # 인증서가 없으면 발급 시도
-        if [ ! -f /etc/letsencrypt/live/syncjin.com/fullchain.pem ]; then
-          echo 'SSL 인증서를 발급합니다...'
-          certbot certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email --staging -d syncjin.com
-          if [ $? -eq 0 ]; then
-            echo '스테이징 인증서 발급 성공. 실제 인증서를 발급합니다...'
-            certbot certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email -d syncjin.com
-          fi
-        else
-          echo 'SSL 인증서가 이미 존재합니다.'
-        fi
-        # certbot 컨테이너는 종료
-        exit 0
-      "
+    command: certonly --webroot --webroot-path=/var/www/certbot --email dldndldms@gmail.com --agree-tos --no-eff-email --staging -d syncjin.com
 
 volumes:
   nginx-logs:

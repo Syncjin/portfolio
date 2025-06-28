@@ -23,6 +23,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.80.7
         version: 5.81.5(@tanstack/react-query@5.81.5(react@19.1.0))(react@19.1.0)
+      '@types/three':
+        specifier: ^0.177.0
+        version: 0.177.0
       gsap:
         specifier: ^3.13.0
         version: 3.13.0

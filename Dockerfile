@@ -1,15 +1,18 @@
 # Node.js 18 Alpine 이미지를 베이스로 사용
 FROM node:18-alpine AS base
 
+# pnpm 설치
+RUN npm install -g pnpm
+
 # 의존성 설치 단계
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# package.json과 package-lock.json을 복사
-COPY package.json package-lock.json* ./
-RUN npm ci
+# package.json과 pnpm-lock.yaml을 복사
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
 
 # 빌드 단계
 FROM base AS builder
@@ -18,7 +21,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Next.js 빌드
-RUN npm run build
+RUN pnpm build
 
 # 프로덕션 단계
 FROM base AS runner

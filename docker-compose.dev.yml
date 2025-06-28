@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   portfolio-dev:
+    # pnpm 기반 빌드/실행
     build:
       context: .
       dockerfile: Dockerfile.dev

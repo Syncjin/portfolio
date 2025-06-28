@@ -1,14 +1,17 @@
 FROM node:18-alpine
 
+# pnpm 설치
+RUN npm install -g pnpm
+
 WORKDIR /app
 
-# package.json과 package-lock.json을 복사
-COPY package.json package-lock.json* ./
-RUN npm ci
+# package.json과 pnpm-lock.yaml을 복사
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install
 
 # 소스 코드 복사
 COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"] 
+CMD ["pnpm", "dev"] 

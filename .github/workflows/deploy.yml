@@ -20,7 +20,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /root/your-project-folder
+            cd /root/syncjin/portfolio
             git pull origin main
             docker compose down
             docker compose up -d --build

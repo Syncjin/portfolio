@@ -7,11 +7,11 @@ import ProjectsSection from "@/components/section/ProjectsSection";
 import ContactSection from "@/components/section/ContactSection";
 
 export const metadata: Metadata = {
-  title: "홈",
-  description: "Frontend 개발자 Syncjin의 포트폴리오 홈페이지입니다. React, Next.js, TypeScript 전문 개발자의 프로젝트와 기술 스택을 확인하세요.",
+  title: "Syncjin Portfolio",
+  description: "Frontend 개발자 Syncjin의 포트폴리오 홈페이지입니다. React, Next.js, TypeScript 전문 개발자의 프로젝트와 기술 스택을 확인해보세요.",
   openGraph: {
     title: "Syncjin Portfolio | Frontend Developer & React Specialist",
-    description: "Frontend 개발자 Syncjin의 포트폴리오 홈페이지입니다. React, Next.js, TypeScript 전문 개발자의 프로젝트와 기술 스택을 확인하세요.",
+    description: "Frontend 개발자 Syncjin의 포트폴리오 홈페이지입니다. React, Next.js, TypeScript 전문 개발자의 프로젝트와 기술 스택을 확인해보세요.",
     url: "https://syncjin.com",
     images: [
       {

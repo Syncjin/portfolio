@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo, useCallback } from "react";
 import * as THREE from "three";
 import { useThemeStore } from "@/store/useThemeStore";
 
@@ -39,26 +39,30 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
     return theme === "dark" ? { r: 0.32, g: 0.42, b: 0.93, rVar: 0.1, gVar: 0.1, bVar: 0.07 } : { r: 0.2, g: 0.3, b: 0.4, rVar: 0.1, gVar: 0.1, bVar: 0.1 };
   }, [theme]);
 
-  const createParticles = (): Particle[] =>
-    Array.from({ length: particleCount }, () => ({
-      position: new THREE.Vector3((Math.random() - 0.5) * areaSize, (Math.random() - 0.5) * areaSize, (Math.random() - 0.5) * areaSize),
-      velocity: new THREE.Vector3((Math.random() - 0.5) * particleSpeed, (Math.random() - 0.5) * particleSpeed, (Math.random() - 0.5) * particleSpeed),
-      size: Math.random() * (particleSizeRange[1] - particleSizeRange[0]) + particleSizeRange[0],
-    }));
+  const createParticles = useCallback(
+    (): Particle[] =>
+      Array.from({ length: particleCount }, () => ({
+        position: new THREE.Vector3((Math.random() - 0.5) * areaSize, (Math.random() - 0.5) * areaSize, (Math.random() - 0.5) * areaSize),
+        velocity: new THREE.Vector3((Math.random() - 0.5) * particleSpeed, (Math.random() - 0.5) * particleSpeed, (Math.random() - 0.5) * particleSpeed),
+        size: Math.random() * (particleSizeRange[1] - particleSizeRange[0]) + particleSizeRange[0],
+      })),
+    [particleCount, particleSizeRange, particleSpeed, areaSize]
+  );
 
-  const createMaterial = () =>
-    new THREE.ShaderMaterial({
-      uniforms: {
-        time: { value: 0 },
-        mouse: { value: new THREE.Vector2(0, 0) },
-        colorR: { value: particleColors.r },
-        colorG: { value: particleColors.g },
-        colorB: { value: particleColors.b },
-        colorRVar: { value: particleColors.rVar },
-        colorGVar: { value: particleColors.gVar },
-        colorBVar: { value: particleColors.bVar },
-      },
-      vertexShader: `
+  const createMaterial = useCallback(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          mouse: { value: new THREE.Vector2(0, 0) },
+          colorR: { value: particleColors.r },
+          colorG: { value: particleColors.g },
+          colorB: { value: particleColors.b },
+          colorRVar: { value: particleColors.rVar },
+          colorGVar: { value: particleColors.gVar },
+          colorBVar: { value: particleColors.bVar },
+        },
+        vertexShader: `
       attribute float size;
       uniform float time;
       uniform vec2 mouse;
@@ -87,7 +91,7 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
         );
       }
     `,
-      fragmentShader: `
+        fragmentShader: `
       varying vec3 vColor;
       
       void main() {
@@ -98,12 +102,14 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
         gl_FragColor = vec4(vColor, alpha * 0.8);
       }
     `,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    [particleColors]
+  );
 
-  const initThree = (canvas: HTMLCanvasElement) => {
+  const initThree = useCallback((canvas: HTMLCanvasElement) => {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 
@@ -122,33 +128,36 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
     rendererRef.current = renderer;
 
     return { scene, renderer, camera };
-  };
+  }, []);
 
-  const createParticleSystem = (particles: Particle[]) => {
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
+  const createParticleSystem = useCallback(
+    (particles: Particle[]) => {
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const sizes = new Float32Array(particleCount);
 
-    particles.forEach((p, i) => {
-      positions[i * 3] = p.position.x;
-      positions[i * 3 + 1] = p.position.y;
-      positions[i * 3 + 2] = p.position.z;
-      sizes[i] = p.size;
-    });
+      particles.forEach((p, i) => {
+        positions[i * 3] = p.position.x;
+        positions[i * 3 + 1] = p.position.y;
+        positions[i * 3 + 2] = p.position.z;
+        sizes[i] = p.size;
+      });
 
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
-    geometryRef.current = geometry;
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+      geometryRef.current = geometry;
 
-    const material = createMaterial();
-    materialRef.current = material;
+      const material = createMaterial();
+      materialRef.current = material;
 
-    const system = new THREE.Points(geometry, material);
-    particleSystemRef.current = system;
-    sceneRef.current?.add(system);
-  };
+      const system = new THREE.Points(geometry, material);
+      particleSystemRef.current = system;
+      sceneRef.current?.add(system);
+    },
+    [particleCount, createMaterial]
+  );
 
-  const updateParticles = (particles: Particle[], geometry: THREE.BufferGeometry) => {
+  const updateParticles = useCallback((particles: Particle[], geometry: THREE.BufferGeometry) => {
     const posArray = geometry.attributes.position.array as Float32Array;
     const sizeArray = geometry.attributes.size.array as Float32Array;
 
@@ -168,9 +177,9 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
 
     geometry.attributes.position.needsUpdate = true;
     geometry.attributes.size.needsUpdate = true;
-  };
+  }, []);
 
-  const setupListeners = (camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) => {
+  const setupListeners = useCallback((camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) => {
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -193,9 +202,9 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
     };
-  };
+  }, []);
 
-  const handleThemeChange = () => {
+  const handleThemeChange = useCallback(() => {
     if (!sceneRef.current || !geometryRef.current) return;
 
     if (materialRef.current) materialRef.current.dispose();
@@ -215,7 +224,7 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
     particleSystemRef.current = newSystem;
     geometryRef.current = newGeometry;
     sceneRef.current.add(newSystem);
-  };
+  }, [createMaterial]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -261,7 +270,7 @@ export default function ParticleBackground({ particleCount = 50, particleSizeRan
       materialRef.current?.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [createParticles, createParticleSystem, setupListeners, handleThemeChange, theme, initThree, updateParticles]);
 
   return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full pointer-events-none z-0" style={{ background: "transparent" }} />;
 }

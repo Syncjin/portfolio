@@ -20,7 +20,16 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /syncjin/portfolio
+            cd /root/syncjin/portfolio
             git pull origin main
-            docker compose down
-            docker compose up -d --build
+
+            # SSL 설정 파일들이 있는지 확인하고 없으면 생성
+            if [ ! -f "nginx.ssl.conf" ]; then
+              echo "SSL 설정 파일이 없습니다. HTTP 모드로 실행합니다."
+              docker compose down
+              docker compose up -d --build
+            else
+              echo "SSL 설정 파일이 있습니다. HTTPS 모드로 실행합니다."
+              docker compose down
+              docker compose -f docker-compose.ssl.yml up -d --build
+            fi

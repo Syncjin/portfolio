@@ -40,3 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# SSL certificates and sensitive files (인증서만 제외, 설정 파일은 포함)
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+ssl/
+certs/
+letsencrypt/
+
+# Docker SSL configs with sensitive data

@@ -35,18 +35,6 @@ npm run dev
 
 ---
 
-## 🐳 Docker로 실행
-
-```bash
-# 빌드
-docker build -t syncjin-portfolio .
-
-# 컨테이너 실행
-docker run -d -p 3000:3000 syncjin-portfolio
-```
-
----
-
 ## 🚀 CI/CD
 
 - GitHub Actions를 사용하여 `main` 브랜치에 push 시 자동으로 Docker 이미지를 빌드하고, 서버에 배포되도록 설정되어 있습니다.

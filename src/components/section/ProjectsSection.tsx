@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useEffect, useState, forwardRef } from "react";
-import { Text, Button } from "@/components/ui";
+import { Text, Button, MarkdownViewer } from "@/components/ui";
 import { useThemeStore } from "@/store/useThemeStore";
 import { usePopupStore } from "@/store/usePopupStore";
 import gsap from "gsap";
@@ -26,6 +26,7 @@ interface Project {
   width?: number;
   height?: number;
   isClosed?: boolean;
+  md?: string;
 }
 
 interface ProjectCardProps {
@@ -100,6 +101,7 @@ const projects: Project[] = [
     image: "/projects/thumbnail_01.png",
     width: 420,
     height: 600,
+    md: "najoongsa.md",
   },
   {
     id: 2,
@@ -113,6 +115,7 @@ const projects: Project[] = [
     image: "/projects/thumbnail_02.png",
     width: 420,
     height: 400,
+    md: "busan-expo.md",
   },
   {
     id: 3,
@@ -130,6 +133,7 @@ const projects: Project[] = [
     image: "/projects/thumbnail_03.png",
     width: 420,
     height: 600,
+    md: "mbc-kokiri.md",
   },
   {
     id: 4,
@@ -143,6 +147,7 @@ const projects: Project[] = [
     width: 420,
     height: 600,
     isClosed: true,
+    md: "review-almah.md",
   },
 ];
 
@@ -201,38 +206,47 @@ export default function ProjectsSection() {
 
   const handleShowDetail = async (idx?: number) => {
     const project = typeof idx === "number" ? projects[idx] : projects[activeProject];
-    // description에서 <b>~</b> 부분을 찾아 분리
-    const desc = project.description;
-    const parts = desc.split(/(<b>.*?<\/b>)/g);
-    let lastWasTitle = false;
-    const parsedDesc = parts.map((part, idx) => {
-      if (part.startsWith("<b>") && part.endsWith("</b>")) {
-        const text = part.replace(/<\/?b>/g, "");
-        lastWasTitle = true;
-        return (
-          <h4 key={idx} className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-6 mb-2">
-            {text}
-          </h4>
-        );
-      } else if (part.trim() !== "") {
-        const className = lastWasTitle
-          ? "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-0"
-          : "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-2";
-        lastWasTitle = false;
-        return (
-          <p key={idx} className={className}>
-            {part}
-          </p>
-        );
-      } else {
-        return null;
-      }
-    });
-    await setOpen({
-      type: "alert",
-      title: project.title,
-      msg: <div>{parsedDesc}</div>,
-    });
+
+    if (project.md) {
+      await setOpen({
+        type: "alert",
+        title: project.title,
+        msg: <MarkdownViewer filename={project.md} />,
+      });
+    } else {
+      // MD 파일이 없는 경우 기존 description 표시
+      const desc = project.description;
+      const parts = desc.split(/(<b>.*?<\/b>)/g);
+      let lastWasTitle = false;
+      const parsedDesc = parts.map((part, idx) => {
+        if (part.startsWith("<b>") && part.endsWith("</b>")) {
+          const text = part.replace(/<\/?b>/g, "");
+          lastWasTitle = true;
+          return (
+            <h4 key={idx} className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-6 mb-2">
+              {text}
+            </h4>
+          );
+        } else if (part.trim() !== "") {
+          const className = lastWasTitle
+            ? "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-0"
+            : "whitespace-pre-line text-xs sm:text-base text-gray-700 dark:text-gray-200 mb-2 mt-2";
+          lastWasTitle = false;
+          return (
+            <p key={idx} className={className}>
+              {part}
+            </p>
+          );
+        } else {
+          return null;
+        }
+      });
+      await setOpen({
+        type: "alert",
+        title: project.title,
+        msg: <div>{parsedDesc}</div>,
+      });
+    }
   };
 
   return (

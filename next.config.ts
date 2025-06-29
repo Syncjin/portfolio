@@ -13,19 +13,14 @@ const nextConfig: NextConfig = {
 
     // Production 빌드에서 console.log 제거
     if (!dev && !isServer) {
-      config.optimization.minimizer?.forEach((minimizer: unknown) => {
-        if (minimizer.constructor.name === "TerserPlugin") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const terserPlugin = minimizer as any;
-          terserPlugin.options.terserOptions = {
-            ...terserPlugin.options.terserOptions,
-            compress: {
-              ...terserPlugin.options.terserOptions?.compress,
-              drop_console: true,
-            },
-          };
-        }
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const terserOptions = (config.optimization.minimizer as any)?.[0]?.options?.terserOptions;
+      if (terserOptions) {
+        terserOptions.compress = {
+          ...terserOptions.compress,
+          drop_console: true,
+        };
+      }
     }
 
     return config;

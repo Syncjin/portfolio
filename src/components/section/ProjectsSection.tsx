@@ -7,7 +7,6 @@ import gsap from "gsap";
 import Image from "next/image";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// GSAP ScrollTrigger 등록
 gsap.registerPlugin(ScrollTrigger);
 
 interface ProjectLink {
@@ -90,27 +89,51 @@ export default function ProjectsSection() {
   const [activeProject, setActiveProject] = useState(0);
   const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
   const projectsText = "Projects";
-
-  // ref 설정 함수를 메모이제이션
-  const handleRefSet = useCallback((index: number, ref: HTMLDivElement | null) => {
-    projectRefs.current[index] = ref;
-  }, []);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (projectsTextRef.current) {
-      const chars = projectsTextRef.current.querySelectorAll(".projects-animated-char");
-      gsap.fromTo(
-        chars,
-        { y: 100, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.05,
-          ease: "power3.out",
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        console.log("Projects text intersection:", entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setIsVisible(true);
         }
-      );
+      },
+      {
+        threshold: 0.3,
+        rootMargin: "0px 0px -100px 0px",
+      }
+    );
+
+    if (projectsTextRef.current) {
+      observer.observe(projectsTextRef.current);
     }
+
+    return () => {
+      if (projectsTextRef.current) {
+        observer.unobserve(projectsTextRef.current);
+      }
+    };
+  }, []);
+
+  // Projects 텍스트 애니메이션
+  useEffect(() => {
+    console.log("isVisible changed:", isVisible);
+    if (isVisible && projectsTextRef.current) {
+      const chars = projectsTextRef.current.querySelectorAll(".projects-animated-char");
+      console.log("Found chars:", chars.length);
+      chars.forEach((char, index) => {
+        setTimeout(() => {
+          (char as HTMLElement).style.opacity = "1";
+          (char as HTMLElement).style.transform = "translateX(0)";
+        }, index * 100);
+      });
+    }
+  }, [isVisible]);
+
+  const handleRefSet = useCallback((index: number, ref: HTMLDivElement | null) => {
+    projectRefs.current[index] = ref;
   }, []);
 
   useEffect(() => {
@@ -125,14 +148,11 @@ export default function ProjectsSection() {
         start: "top center+=100",
         end: "bottom center-=100",
         onEnter: () => {
-          // 이전 상태와 다를 때만 업데이트
           setActiveProject((prev) => (prev !== index ? index : prev));
         },
         onEnterBack: () => {
-          // 이전 상태와 다를 때만 업데이트
           setActiveProject((prev) => (prev !== index ? index : prev));
         },
-        // 깜빡임 방지를 위한 설정
         once: false,
       });
     });
@@ -177,6 +197,7 @@ export default function ProjectsSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="projects"
       className="w-full px-2 sm:px-4 md:px-6 lg:px-8 py-12 md:py-50"
       style={{ background: "#202127", color: theme === "dark" ? "#fff" : "#18181b", transition: "background 0.3s, color 0.3s" }}
@@ -184,7 +205,15 @@ export default function ProjectsSection() {
       <div ref={projectsTextRef} className="mb-25 w-full max-w-6xl mx-auto pt-12 pl-4  z-10">
         <Text variant="h2" className="text-left text-3xl sm:text-5xl md:text-6xl" color="white" ignoreTheme>
           {projectsText.split("").map((char, idx) => (
-            <span key={idx} className="projects-animated-char inline-block whitespace-pre">
+            <span
+              key={idx}
+              className="projects-animated-char inline-block whitespace-pre"
+              style={{
+                opacity: 0,
+                transform: "translateX(30px)",
+                transition: "opacity 0.7s ease, transform 0.7s ease",
+              }}
+            >
               {char}
             </span>
           ))}
@@ -246,7 +275,6 @@ export default function ProjectsSection() {
           <ProjectCardsSection projects={projects} onRefSet={handleRefSet} />
         </div>
 
-        {/* 모바일: 각 프로젝트마다 설명+이미지 세트로 세로 나열 */}
         <div className="flex flex-col gap-12 md:hidden">
           {projects.map((project, idx) => (
             <div key={project.id} className="flex flex-col gap-4">

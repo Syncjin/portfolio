@@ -26,36 +26,37 @@ export const projects: Project[] = [
     summary: "집을 조건에 따라 찾는 중개사 상담 서비스",
     description:
       "<b>프로젝트 요약</b>\nReact, Next.js, React-Native, Electron.js로 구성된 웹, 모바일, 데스크탑 앱 서비스입니다. 나중사 유저 웹은 나중사 소개 사이트이고, 중개사 웹은 중개사들이 매물을 등록, 제안하고 채팅으로 상담할 수 있습니다. React-Native로 유저앱, 중개사앱이 개발되었으며 Electron.js로 중개사 데스크탑앱을 개발했습니다.\n<b>주요 성과</b>\n문제없고 생산성을 챙기기 위해 사내에 없던 Docker, GitHub Actions로 CI/CD를 구성하여 운영하었고, 상담 기능인 채팅을 위해 socket.io로 채팅 기능, 메시지별 UI를 구현하였습니다. \n기억나는 이슈 해결 경험으로는 Push와 DeepLink, 유입 경로 확인이 중요했던 서비스라서 Appsflyer를 적극 활용하였고 웹에서는 push message를 통해 sound가 재생되지 않아 필요에 의해 Electron.js로 데스크탑앱을 개발하여 배포하면서 멀티플랫폼 운영을 경험할 수 있었습니다.\n<b>외부 활동</b>\n중개사 유치를 위해 나중사 서비스를 위해 서울대학교 캠퍼스타운 입주, 예비창업패키지를 진행하며 투자유치를 위한 활동도 진행했습니다.",
-    link: [
-      {
-        title: "유저웹",
-        url: "https://najoongsa.com",
-      },
-      {
-        title: "유저앱(Android)",
-        url: "https://play.google.com/store/apps/details?id=com.najoongsa.user.app&hl=ko",
-      },
-      {
-        title: "유저앱(iOS)",
-        url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC/id6470787996",
-      },
-      {
-        title: "중개사앱(Android)",
-        url: "https://play.google.com/store/apps/details?id=com.najoongsa.realtor.app&hl=ko",
-      },
-      {
-        title: "중개사앱(iOS)",
-        url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC-%EC%A4%91%EA%B0%9C%EC%82%AC-%EC%A0%84%EC%9A%A9/id6476068129",
-      },
-      {
-        title: "중개사 웹",
-        url: "https://realtor.najoongsa.com",
-      },
-    ],
+    // link: [
+    //   {
+    //     title: "유저웹",
+    //     url: "https://najoongsa.com",
+    //   },
+    //   {
+    //     title: "유저앱(Android)",
+    //     url: "https://play.google.com/store/apps/details?id=com.najoongsa.user.app&hl=ko",
+    //   },
+    //   {
+    //     title: "유저앱(iOS)",
+    //     url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC/id6470787996",
+    //   },
+    //   {
+    //     title: "중개사앱(Android)",
+    //     url: "https://play.google.com/store/apps/details?id=com.najoongsa.realtor.app&hl=ko",
+    //   },
+    //   {
+    //     title: "중개사앱(iOS)",
+    //     url: "https://apps.apple.com/kr/app/%EB%82%98%EC%A4%91%EC%82%AC-%EC%A4%91%EA%B0%9C%EC%82%AC-%EC%A0%84%EC%9A%A9/id6476068129",
+    //   },
+    //   {
+    //     title: "중개사 웹",
+    //     url: "https://realtor.najoongsa.com",
+    //   },
+    // ],
     tags: ["React", "Next.js", "React-native", "Electron.js", "Appsflyer", "Socket.io", "Docker", "Github actions", "Styled-components"],
     image: "/projects/thumbnail_01.png",
     width: 420,
     height: 600,
+    isClosed: true,
     md: "najoongsa.md",
   },
   {
